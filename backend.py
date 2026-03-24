@@ -22,12 +22,15 @@ def process_day(day: ET.Element) -> tuple[str, str, str]:
 def process_current(current: ET.Element) -> tuple[str, str, str, ET.Element]:
     return current.find("condition/text").text, current.find("condition/code").text, current.find("temp_c").text, current.find("air_quality")
 
+def calc_aqi_level(concentration, intervals):
+    concentration = float(concentration)
+    low = 0
+    for level, high in intervals:
+        if low <= concentration <= high:
+            return level
+        low = high + 1
 
-def calc_aqi_level(concentration, intervals) -> str:
-    for interval_level, interval_max in intervals:
-        if concentration <= str(interval_max):
-            return interval_level
-    return 7
+    return intervals[-1][0]
 
 
 def air_quality_summary(air_quality: ET.Element) -> str:
